@@ -116,6 +116,10 @@ encode的作用是将unicode编码转换成其他编码的字符串，如str2.en
 
 7).手写个使用装饰器实现的单例模式
 
+[python单例模式](https://github.com/BeanWei/Interview-rigid-demand/blob/master/You%20must%20know/python%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F.md)
+
+
+
 8).使用装饰器的单例和使用其他方法的单例，在后续使用中，有何区别
 
 9).手写：正则邮箱地址
