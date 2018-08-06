@@ -240,7 +240,7 @@ python3中的range就是python2中的xrange。
 
 
 
-#Django项目部分
+# Django项目部分
 
 都是让简单的介绍下你在公司的项目，不管是不是后端相关的，主要是要体现出你干了什么
 
