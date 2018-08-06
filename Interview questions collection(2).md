@@ -1,12 +1,12 @@
 #python语法以及其他基础部分
 
 1).可变与不可变类型
-    可变类型：列表，字典
-    不可变类型：数字，字符串，元组
+可变类型：列表，字典
+不可变类型：数字，字符串，元组
 
-    对不可变类型的变量重新赋值，实际上是重新创建一个不可变类型的对象，并将原来的变量重新指向新创建的对象（如果没有其他变量引用原有对象的话（即引用计数为0），原有对象就会被回收）
+对不可变类型的变量重新赋值，实际上是重新创建一个不可变类型的对象，并将原来的变量重新指向新创建的对象（如果没有其他变量引用原有对象的话（即引用计数为0），原有对象就会被回收）
 
-    Note: 使用 python 内置函数 ` id ` id() 可以查看变量的内存地址进行验证，使用 `hex(id(i))` 可以查看16进制的内存地址。
+Note: 使用 python 内置函数 ` id ` id() 可以查看变量的内存地址进行验证，使用 `hex(id(i))` 可以查看16进制的内存地址。
 
 2).浅拷贝与深拷贝的实现方式、区别；deepcopy如果你来设计，如何实现
 
@@ -35,41 +35,41 @@ __new__() 与 __init__()的区别
 13).介绍下协程，为何比线程还快
 
 14).range和xrange的区别
-    ```
-    #coding:utf-8
+```
+#coding:utf-8
 
-    import time
-    from functools import wraps
+import time
+from functools import wraps
 
-    def duration(f):
-        @wraps(f)
-        def wrapper():
-            s_time = time.time()
-            f()
-            e_time = time.time()
-            print(u'用时：%d s' % (e_time - s_time))
-        return wrapper
+def duration(f):
+    @wraps(f)
+    def wrapper():
+        s_time = time.time()
+        f()
+        e_time = time.time()
+        print(u'用时：%d s' % (e_time - s_time))
+    return wrapper
 
-    @duration
-    def testrange():
-        for num in range(1000000):
-            print(num)
+@duration
+def testrange():
+    for num in range(1000000):
+        print(num)
 
 
-    if __name__ == '__main__':
-        testrange()
-    ```
-    windows环境下运行上面这段代码：py3需要70s, py2需要135s.
+if __name__ == '__main__':
+    testrange()
+```
+windows环境下运行上面这段代码：py3需要70s, py2需要135s.
 
-    range()返回一个递增或递减的数字列表,列表的元素值由三个参数决定
-    start表示列表开始的值,默认为“0”。
-    stop 表示列表结束的值,该参数不可缺少
-    参数step表示步长,默认值为“1”。
-    range()返回的是一个递增或递减的数字列表。
+range()返回一个递增或递减的数字列表,列表的元素值由三个参数决定
+start表示列表开始的值,默认为“0”。
+stop 表示列表结束的值,该参数不可缺少
+参数step表示步长,默认值为“1”。
+range()返回的是一个递增或递减的数字列表。
 
-    xrange 是一个类,返回的是一个xrange对象。使用xrange()进行遍历,每次遍历只返回一个值。range()返回的是一个列表,一次性计算并返回所有的值。因此,xrange()的执行效率要高于range()
+xrange 是一个类,返回的是一个xrange对象。使用xrange()进行遍历,每次遍历只返回一个值。range()返回的是一个列表,一次性计算并返回所有的值。因此,xrange()的执行效率要高于range()
 
-    python3中的range就是python2中的xrange。
+python3中的range就是python2中的xrange。
 
 
 
