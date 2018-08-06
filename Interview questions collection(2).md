@@ -1,4 +1,4 @@
-#python语法以及其他基础部分
+# python语法以及其他基础部分
 
 0).可变与不可变类型
 
@@ -81,11 +81,38 @@ Python 2.x中默认都是经典类，只有显式继承了object才是新式类
 
 3).你知道几种设计模式
 
+>设计模式的定义:为了解决面向对象系统中重要和重复的设计封装在一起的一种代码实现框架,可以使得代码更加易于扩展和调用
+
+[python设计模式](https://github.com/BeanWei/Interview-rigid-demand/blob/master/You%20must%20know/python%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.md)
+
+
+
+
 4).编码和解码你了解过么
+
+字符串在Python内部的表示是unicode编码，因此，在做编码转换时，通常需要以unicode作为中间编码，即先将其他编码的字符串解码（decode）成unicode，再从unicode编码（encode）成另一种编码。
+
+encode与decode
+decode的作用是将其他编码的字符串转换成unicode编码，如str1.decode(‘utf-8’)，表示将utf-8编码的字符串转换成unicode编码。
+
+encode的作用是将unicode编码转换成其他编码的字符串，如str2.encode(‘utf-8’)，表示将unicode编码的字符串转换成utf-8编码。
+
+
 
 5).列表推导list comprehension和生成器的优劣
 
+* 列表推导式是将所有的值一次性加载到内存中
+* 生成器是将列表推导式的[]改成(),不会将所有的值一次性加载到内存中,延迟计算,一次返回一个结果,它不会一次生成所有的结果,这对大数据量处理,非常有用
+* 列表推导式可以遍历任意次, 生成器只能遍历一次
+  
+
 6).什么是装饰器；如果想在函数之后进行装饰，应该怎么做
+
+1. [python装饰器](https://github.com/BeanWei/Interview-rigid-demand/blob/master/You%20must%20know/python%E8%A3%85%E9%A5%B0%E5%99%A8.md)
+
+2. 将装饰代码部分放置 func() 后面即可实现
+
+
 
 7).手写个使用装饰器实现的单例模式
 
