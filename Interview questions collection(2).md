@@ -160,6 +160,41 @@ False
 
 9).手写：正则邮箱地址
 
+假定email地址的必要形式为：
+xxxxxx@xxxxxxxx.xxxxxx
+其他一概不作检查，对应的RE应为：` [^@]+@[^@]+\.[^@]+ `
+
+验证脚本：
+```
+import re
+p = re.compile(r"[^@]+@[^@]+\.[^@]+")
+#p = re.compile(r'([^@]+)@([^@]+)\.([^@]+)')  如果改成这种形式，后面可以输出帐号
+emails = ['a@uuuuuu.xyzuv', '@', '@.org', '@xxx.com',
+          'xsd@.cn', 'rs@233.', 'c', 'cde@', 'xy@163.com']
+for each in emails:
+    if not p.match(each):
+        print(each, " NOT valid")
+    else:
+        print(each, ' is valid')
+        #print(p.match(each).groups()) 
+```
+运行结果：
+```
+a@uuuuuu.xyzuv  is valid
+#('a', 'uuuuuu', 'xyzuv')
+@  NOT valid
+@.org  NOT valid
+@xxx.com  NOT valid
+xsd@.cn  NOT valid
+rs@233.  NOT valid
+c  NOT valid
+cde@  NOT valid
+xy@163.com  is valid
+#('xy', '163', 'com')
+```
+
+
+
 10).介绍下垃圾回收：引用计数/分代回收/孤立引用环
 
 11).多进程与多线程的区别,CPU密集型适合用什么
