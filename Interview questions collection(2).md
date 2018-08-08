@@ -118,9 +118,45 @@ encode的作用是将unicode编码转换成其他编码的字符串，如str2.en
 
 [python单例模式](https://github.com/BeanWei/Interview-rigid-demand/blob/master/You%20must%20know/python%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F.md)
 
+代码：
+```
+def singleton(cls):
+    _instance = {}
+    def _singleton(*args, **kwargs):
+        if cls not in _instance:
+            _instance[cls] = cls(*args, **kwargs)
+        return _instance[cls]
+    return _singleton
+
+@singleton
+class Foo:
+    def __init__(self):
+        pass
+
+class Bar:
+    def __init__(self):
+        pass
+
+a, b, c, d = Foo(), Foo(), Bar(), Bar()
+
+print(a == b)
+
+print(c == d)
+
+output:
+True
+False
+```
+
 
 
 8).使用装饰器的单例和使用其他方法的单例，在后续使用中，有何区别
+实现单例模式的几种方法：
+1. 使用模块         
+2. 使用装饰器          =>  灵活易复用
+3. 使用类                
+4. 基于__new__方法实现(推荐)
+5. 基于metaclass方式实现
 
 9).手写：正则邮箱地址
 
