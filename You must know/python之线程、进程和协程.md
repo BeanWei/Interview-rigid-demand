@@ -371,3 +371,186 @@ Queue和LifoQueue的“综合体”，双向进出。方法较多，使用复杂
 >   这个阻塞队列就是用来给生产者和消费者解耦的。纵观大多数设计模式，都会找一个第三者出来进行解耦，如工厂模式的第三者是工厂类，模板模式的第三者是模板类。在学习一些设计模式的过程中，如果先找到这个模式的第三者，能帮助我们快速熟悉一个设计模式。
 
 >    以上摘自方腾飞的《聊聊并发——生产者消费者模式》
+
+### 1.7 线程池
+
+在使用多线程处理任务时也不是线程越多越好，由于在切换线程的时候，需要切换上下文环境，依然会造成cpu的大量开销。为解决这个问题，线程池的概念被提出来了。预先创建好一个较为优化的数量的线程，让过来的任务立刻能够使用，就形成了线程池。在python中，没有内置的较好的线程池模块，需要自己实现或使用第三方模块。
+
+
+## 二、进程
+
+在python中multiprocess模块提供了Process类，实现进程相关的功能。但是，由于它是基于fork机制的，因此不被windows平台支持。想要在windows中运行，必须使用if __name__ == '__main__:的方式，显然这只能用于调试和学习，不能用于实际环境。
+（PS：在这里我必须吐槽一下python的包、模块和类的组织结构。在multiprocess中你既可以import大写的Process，也可以import小写的process，这两者是完全不同的东西。这种情况在python中很多，新手容易傻傻分不清。）
+下面是一个简单的多进程例子，你会发现Process的用法和Thread的用法几乎一模一样。
+```
+from multiprocessing import Process
+ 
+def foo(i):
+    print("This is Process ", i)
+ 
+if __name__ == '__main__':
+    for i in range(5):
+        p = Process(target=foo, args=(i,))
+        p.start()
+```
+
+### 2.1 进程的数据共享
+每个进程都有自己独立的数据空间，不同进程之间通常是不能共享数据，创建一个进程需要非常大的开销。
+```
+from multiprocessing import Process
+list_1 = []
+def foo(i):
+    list_1.append(i)
+    print("This is Process ", i," and list_1 is ", list_1)
+ 
+if __name__ == '__main__':
+    for i in range(5):
+        p = Process(target=foo, args=(i,))
+        p.start()
+ 
+    print("The end of list_1:", list_1)
+```
+运行上面的代码，你会发现列表list_1在各个进程中只有自己的数据，完全无法共享。想要进程之间进行资源共享可以使用queues/Array/Manager这三个multiprocess模块提供的类。
+
+### 2.1.1 使用Array共享数据
+```
+from multiprocessing import Process
+from multiprocessing import Array
+ 
+def Foo(i,temp):
+    temp[0] += 100
+    for item in temp:
+        print(i,'----->',item)
+ 
+if __name__ == '__main__':
+    temp = Array('i', [11, 22, 33, 44])
+    for i in range(2):
+        p = Process(target=Foo, args=(i,temp))
+        p.start()
+```
+对于Array数组类，括号内的“i”表示它内部的元素全部是int类型，而不是指字符i，列表内的元素可以预先指定，也可以指定列表长度。概括的来说就是Array类在实例化的时候就必须指定数组的数据类型和数组的大小，类似temp = Array('i', 5)。对于数据类型有下面的表格对应：
+>‘c’: ctypes.c_char, ‘u’: ctypes.c_wchar,
+>‘b’: ctypes.c_byte, ‘B’: ctypes.c_ubyte,
+>‘h’: ctypes.c_short, ‘H’: ctypes.c_ushort,
+>‘i’: ctypes.c_int, ‘I’: ctypes.c_uint,
+>‘l’: ctypes.c_long, ‘L’: ctypes.c_ulong,
+>‘f’: ctypes.c_float, ‘d’: ctypes.c_double
+
+### 2.1.2 使用Manager共享数据
+```
+from multiprocessing import Process, Manager
+ 
+def Foo(i,dic):
+    dic[i] = 100+i
+    print(dic.values())
+ 
+if __name__ == '__main__':
+    manage = Manager()
+    dic = manage.dict()
+    for i in range(10):
+        p = Process(target=Foo, args=(i,dic))
+        p.start()
+        p.join()
+```
+Manager比Array要好用一点，因为它可以同时保存多种类型的数据格式。
+
+### 2.1.3 使用queues的Queue类共享数据
+```
+import multiprocessing
+from multiprocessing import Process
+from multiprocessing import queues
+
+def foo(i, arg):
+    arg.put(i)
+    print('The Process is ', i, 'and the queue\'s size is ', arg.size())
+
+if __name__ == '__main__':
+    li = queues.Queue(20, ctx=multiprocrssing)
+    for i in range(10):
+        p = Process(target=foo, args=(i, li,))
+        p.start()
+```
+这里就有点类似上面的队列了。从运行结果里，你还能发现数据共享中存在的脏数据问题。另外，比较悲催的是multiprocessing里还有一个Queue，一样能实现这个功能。
+
+### 2.2 进程锁
+
+为了防止和多线程一样的出现数据抢夺和脏数据的问题，同样需要设置进程锁。与threading类似，在multiprocessing里也有同名的锁类RLock, Lock, Event, Condition, Semaphore，连用法都是一样样的！
+
+### 2.3 进程池
+既然有线程池，那必然也有进程池。但是，python给我们内置了一个进程池，不需要像线程池那样需要自定义，你只需要简单的from multiprocessing import Pool。
+```
+from multiprocessing import Pool
+import time
+ 
+def f1(args):
+    time.sleep(1)
+    print(args)
+ 
+if __name__ == '__main__':
+    p = Pool(5)
+    for i in range(30):
+        p.apply_async(func=f1, args= (i,))
+    p.close()           # 等子进程执行完毕后关闭进程池
+    # time.sleep(2)
+    # p.terminate()     # 立刻关闭进程池
+    p.join()
+```
+进程池内部维护一个进程序列，当使用时，去进程池中获取一个进程，如果进程池序列中没有可供使用的进程，那么程序就会等待，直到进程池中有可用进程为止。
+进程池中有以下几个主要方法：
+* apply：从进程池里取一个进程并执行
+* apply_async：apply的异步版本
+* terminate:立刻关闭进程池
+* join：主进程等待所有子进程执行完毕。必须在close或terminate之后。
+* close：等待所有进程结束后，才关闭进程池。
+
+## 三、协程
+线程和进程的操作是由程序触发系统接口，最后的执行者是系统，它本质上是操作系统提供的功能。而协程的操作则是程序员指定的。
+
+协程存在的意义：对于多线程应用，CPU通过切片的方式来切换线程间的执行，线程切换时需要耗时。协程，则只使用一个线程，分解一个线程成为多个“微线程”，在一个线程中规定某个代码块的执行顺序。
+
+协程的适用场景：当程序中存在大量不需要CPU的操作时（IO）。
+
+在不需要自己“造轮子”的年代，同样有第三方模块为我们提供了高效的协程，这里介绍一下greenlet和gevent。本质上，gevent是对greenlet的高级封装，因此一般用它就行，这是一个相当高效的模块。
+
+在使用它们之前，需要先安装，可以通过源码，也可以通过pip。
+
+### 3.1 greenlet
+```
+from greenlet import greenlet
+ 
+def test1():
+    print(12)
+    gr2.switch()
+    print(34)
+    gr2.switch()
+ 
+def test2():
+    print(56)
+    gr1.switch()
+    print(78)
+ 
+gr1 = greenlet(test1)
+gr2 = greenlet(test2)
+gr1.switch()
+```
+实际上，greenlet就是通过switch方法在不同的任务之间进行切换。
+
+### 3.2 gevent
+```
+from gevent import monkey; monkey.patch_all()
+import gevent
+import requests
+ 
+def f(url):
+    print('GET: %s' % url)
+    resp = requests.get(url)
+    data = resp.text
+    print('%d bytes received from %s.' % (len(data), url))
+ 
+gevent.joinall([
+        gevent.spawn(f, 'https://www.python.org/'),
+        gevent.spawn(f, 'https://www.yahoo.com/'),
+        gevent.spawn(f, 'https://github.com/'),
+])
+```
+通过joinall将任务f和它的参数进行统一调度，实现单线程中的协程。代码封装层次很高，实际使用只需要了解它的几个主要方法即可。
