@@ -341,6 +341,19 @@ python3中的range就是python2中的xrange。
 
 1).手写快排；堆排；几种常用排序的算法复杂度是多少；快排平均复杂度多少，最坏情况如何优化
 
+快排：
+```python
+def quicksort(list):
+    if len(list) < 2:
+        return list
+    else:
+        midpivot = list[0]
+        lessbeforemidpivot = [i for i in list[1:] if i <= midpivot]
+        biggeraftermidpivot = [i for i in list[1:] if i > midpivot]
+        finallylist = quicksort(lessbeforemidpivot) + [midpivot] + quicksort(biggeraftermidpivot)
+        return finallylist
+```
+
 2).手写：已知一个长度n的无序列表，元素均是数字，要求把所有间隔为d的组合找出来，你写的解法算法复杂度多少
 
 3).手写：一个列表A=[A1，A2，…,An]，要求把列表中所有的组合情况打印出来；
